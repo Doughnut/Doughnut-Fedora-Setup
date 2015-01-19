@@ -14,8 +14,8 @@ cd /tmp/fedorasetup
 # Install things!
 
 echo "Installing RPMFusion repos and some basic software!"
-yum localinstall --nogpgcheck http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-yum install cabextract lzip nano p7zip p7zip-plugins unrar wget git -y
+yum localinstall --nogpgcheck http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm -y > /dev/null
+yum install cabextract lzip nano p7zip p7zip-plugins unrar wget git -y  > /dev/null
 
 echo "Done with initial install!"
 
@@ -24,20 +24,20 @@ echo "Done with initial install!"
 echo "Telling yum to keepcache!"
 sed -i 's/keepcache=.*$/keepcache=1/g' "/etc/yum.conf"
 echo "Installing  Yum Fastest-Mirror"
-yum install yum-plugin-fastestmirror* -y
+yum install yum-plugin-fastestmirror* -y  > /dev/null
 
 # Disable firewalld and enable iptables
 
 echo "Disabling firewalld and turning on iptables!"
-systemctl disable firewalld
-systemctl stop firewalld 
-yum install iptables-services -y
-touch /etc/sysconfig/iptables
-touch /etc/sysconfig/ip6tables
-systemctl start iptables
-systemctl start ip6tables
-systemctl enable iptables
-systemctl enable ip6tables
+systemctl disable firewalld  > /dev/null
+systemctl stop firewalld > /dev/null
+yum install iptables-services -y  > /dev/null
+touch /etc/sysconfig/iptables  > /dev/null
+touch /etc/sysconfig/ip6tables  > /dev/null
+systemctl start iptables  > /dev/null
+systemctl start ip6tables > /dev/null
+systemctl enable iptables > /dev/null
+systemctl enable ip6tables > /dev/null
 
 # Setup iptables to only allow SSH and the needs-to-start-with-syn rule
 
@@ -53,7 +53,7 @@ $IPT -A OUTPUT -o lo -j ACCEPT
 $IPT -A INPUT -p tcp ! --syn -m state --state NEW -s 0.0.0.0/0 -j DROP
 $IPT -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 $IPT -A INPUT -p tcp --dport 22 -m state --state NEW -s 0.0.0.0/0 -j ACCEPT
-unset $IPT
+unset IPT  > /dev/null
 echo "Done setting up iptables!"
 
 # Setting SELinux as permissive
@@ -87,21 +87,22 @@ enabled=1
 gpgcheck=1
 gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub
 EOF
-yum install google-chrome-stable -y
+yum install google-chrome-stable -y  > /dev/null
 
 # Installing various programs and plugins
 
 echo "Installing gnome-tweak, email, chat, guake, ssh-server, media stuff, and python things!"
-yum install gnome-tweak-tool thunderbird pidgin pidgin-sipe guake python-pip vlc pithos openssh-server python-pandas python-beautifulsoup amrnb amrwb faac faad2 flac gstreamer1-libav gstreamer1-plugins-bad-freeworld gstreamer1-plugins-ugly gstreamer-ffmpeg gstreamer-plugins-bad-nonfree gstreamer-plugins-espeak gstreamer-plugins-fc gstreamer-plugins-ugly gstreamer-rtsp lame libdca libmad libmatroska x264 xvidcore gstreamer1-plugins-bad-free gstreamer1-plugins-base gstreamer1-plugins-good gstreamer-plugins-bad gstreamer-plugins-bad-free gstreamer-plugins-base gstreamer-plugins-good -y
-pip install livestreamer
+yum install gnome-tweak-tool thunderbird pidgin pidgin-sipe guake python-pip vlc pithos openssh-server python-pandas python-beautifulsoup amrnb amrwb faac faad2 flac gstreamer1-libav gstreamer1-plugins-bad-freeworld gstreamer1-plugins-ugly gstreamer-ffmpeg gstreamer-plugins-bad-nonfree gstreamer-plugins-espeak gstreamer-plugins-fc gstreamer-plugins-ugly gstreamer-rtsp lame libdca libmad libmatroska x264 xvidcore gstreamer1-plugins-bad-free gstreamer1-plugins-base gstreamer1-plugins-good gstreamer-plugins-bad gstreamer-plugins-bad-free gstreamer-plugins-base gstreamer-plugins-good -y  > /dev/null
+pip install livestreamer > /dev/null
 
 # Installing Dropbox
 
-yum install python-gpgme
-dropboxurl=$(curl https://www.dropbox.com/install?os=lnx | tr ' ' '\n' | grep -o "nautilus-dropbox-[0-9].[0-9].[0-9]-[0-9].fedora.x86_64.rpm" | head -n 1 | sed -e 's/^/http:\/\/linux.dropbox.com\/packages\/fedora\//')
-wget $dropboxurl
-rpm -U *.fedora.x86_64.rpm
-rm -rf *.fedora.x86_64.rpm
+echo "Installing Dropbox"
+yum install libgnome -y  > /dev/null
+dropboxurl=$(curl https://www.dropbox.com/install?os=lnx | tr ' ' '\n' | grep -o "nautilus-dropbox-[0-9].[0-9].[0-9]-[0-9].fedora.x86_64.rpm" | head -n 1 | sed -e 's/^/http:\/\/linux.dropbox.com\/packages\/fedora\//') 
+wget $dropboxurl  > /dev/null
+rpm -U  --nogpg *.fedora.x86_64.rpm  > /dev/null
+rm -rf *.fedora.x86_64.rpm  > /dev/null
 
 # Terminal Colors! (From https://github.com/satya164/fedy/blob/master/plugins/util/color_prompt.sh)
 
