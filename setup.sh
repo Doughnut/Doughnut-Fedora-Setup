@@ -11,6 +11,13 @@ CURRENTDIR=$(pwd)
 mkdir /tmp/fedorasetup/
 cd /tmp/fedorasetup
 
+# Yum tweaks
+
+echo "Telling yum to keepcache!"
+sed -i 's/keepcache=.*$/keepcache=1/g' "/etc/yum.conf"
+echo "Installing  Yum Fastest-Mirror"
+yum install yum-plugin-fastestmirror* -y  > /dev/null
+
 # Install things!
 
 echo "Installing RPMFusion repos and some basic software!"
@@ -18,13 +25,6 @@ yum localinstall --nogpgcheck http://download1.rpmfusion.org/free/fedora/rpmfusi
 yum install cabextract lzip nano p7zip p7zip-plugins unrar wget git -y  > /dev/null
 
 echo "Done with initial install!"
-
-# Yum tweaks
-
-echo "Telling yum to keepcache!"
-sed -i 's/keepcache=.*$/keepcache=1/g' "/etc/yum.conf"
-echo "Installing  Yum Fastest-Mirror"
-yum install yum-plugin-fastestmirror* -y  > /dev/null
 
 # Disable firewalld and enable iptables
 
@@ -101,7 +101,7 @@ echo "Installing Dropbox"
 yum install libgnome -y  > /dev/null
 dropboxurl=$(curl https://www.dropbox.com/install?os=lnx | tr ' ' '\n' | grep -o "nautilus-dropbox-[0-9].[0-9].[0-9]-[0-9].fedora.x86_64.rpm" | head -n 1 | sed -e 's/^/http:\/\/linux.dropbox.com\/packages\/fedora\//') 
 wget $dropboxurl  > /dev/null
-rpm -U  --nogpg *.fedora.x86_64.rpm  > /dev/null
+rpm -U *.fedora.x86_64.rpm  > /dev/null
 rm -rf *.fedora.x86_64.rpm  > /dev/null
 
 # Terminal Colors! (From https://github.com/satya164/fedy/blob/master/plugins/util/color_prompt.sh)
