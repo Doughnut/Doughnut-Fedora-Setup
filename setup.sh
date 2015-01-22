@@ -23,7 +23,7 @@ yum install yum-plugin-fastestmirror* -y  > /dev/null
 echo "Installing RPMFusion repos and some basic software!"
 yum localinstall --nogpgcheck http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm -y > /dev/null
 yum install cabextract lzip nano p7zip p7zip-plugins unrar wget git -y  > /dev/null
-
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-*
 echo "Done with initial install!"
 
 # Disable firewalld and enable iptables
@@ -88,6 +88,8 @@ gpgcheck=1
 gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub
 EOF
 yum install google-chrome-stable -y  > /dev/null
+rpm --import https://dl-ssl.google.com/linux/linux_signing_key.pub
+
 
 # Installing various programs and plugins
 
@@ -101,7 +103,7 @@ echo "Installing Dropbox"
 yum install libgnome -y  > /dev/null
 dropboxurl=$(curl https://www.dropbox.com/install?os=lnx | tr ' ' '\n' | grep -o "nautilus-dropbox-[0-9].[0-9].[0-9]-[0-9].fedora.x86_64.rpm" | head -n 1 | sed -e 's/^/http:\/\/linux.dropbox.com\/packages\/fedora\//') 
 wget $dropboxurl  > /dev/null
-rpm -U *.fedora.x86_64.rpm  > /dev/null
+rpm -U *.fedora.x86_64.rpm
 rm -rf *.fedora.x86_64.rpm  > /dev/null
 
 # Terminal Colors! (From https://github.com/satya164/fedy/blob/master/plugins/util/color_prompt.sh)
