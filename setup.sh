@@ -74,7 +74,7 @@ SELINUX=permissive
 # strict - Full SELinux protection.
 SELINUXTYPE=targeted
 EOF
-unset $selinuxfile
+unset selinuxfile
 
 # Adding chrome repo and installing chrome stable
 
@@ -105,6 +105,7 @@ dropboxurl=$(curl https://www.dropbox.com/install?os=lnx | tr ' ' '\n' | grep -o
 wget $dropboxurl  > /dev/null
 rpm -U *.fedora.x86_64.rpm
 rm -rf *.fedora.x86_64.rpm  > /dev/null
+yum-config-manager --save --setopt=Dropbox.skip_if_unavailable=true
 
 # Terminal Colors! (From https://github.com/satya164/fedy/blob/master/plugins/util/color_prompt.sh)
 
@@ -160,3 +161,6 @@ sudo ln -s $INSTALLATION_DIR/sublime_text.desktop /usr/share/applications/sublim
  
 echo ""
 echo "Sublime Text 3 installed successfully!"
+
+rpm --rebuilddb > /dev/null
+yum update kernel* selinux*
