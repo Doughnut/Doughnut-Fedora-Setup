@@ -163,4 +163,4 @@ echo ""
 echo "Sublime Text 3 installed successfully!"
 
 rpm --rebuilddb > /dev/null
-yum update kernel* selinux*
+yum update kernel* selinux* -y
