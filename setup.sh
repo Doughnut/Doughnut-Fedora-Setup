@@ -38,6 +38,7 @@ systemctl start iptables  > /dev/null
 systemctl start ip6tables > /dev/null
 systemctl enable iptables > /dev/null
 systemctl enable ip6tables > /dev/null
+/sbin/service iptables save 
 
 # Setup iptables to only allow SSH and the needs-to-start-with-syn rule
 
