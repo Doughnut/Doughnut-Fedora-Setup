@@ -22,7 +22,7 @@ yum install yum-plugin-fastestmirror* -y  > /dev/null
 
 echo "Installing RPMFusion repos and some basic software!"
 yum localinstall --nogpgcheck http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm -y > /dev/null
-yum install cabextract lzip nano p7zip p7zip-plugins unrar wget git -y  > /dev/null
+yum install cabextract lzip nano p7zip p7zip-plugins unrar wget git vim sendmail xclip -y  > /dev/null
 rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-*
 echo "Done with initial install!"
 
@@ -75,7 +75,6 @@ SELINUX=permissive
 # strict - Full SELinux protection.
 SELINUXTYPE=targeted
 EOF
-unset selinuxfile
 
 # Adding chrome repo and installing chrome stable
 
@@ -130,8 +129,6 @@ EOF
 # Run this script with:
 #
 #     curl -L git.io/sublimetext | sh
- 
- 
 # Detect the architecture
 UNAME=$(uname -m)
 if [ "$UNAME" = 'x86_64' ]; then
@@ -139,29 +136,32 @@ if [ "$UNAME" = 'x86_64' ]; then
 else
   ARCHITECTURE="x32"
 fi
- 
 # Download the tarball, unpack and install
 URL="http://c758482.r82.cf2.rackcdn.com/sublime_text_3_build_3065_$ARCHITECTURE.tar.bz2"
 INSTALLATION_DIR="/opt/sublime_text"
- 
 curl -o $HOME/st3.tar.bz2 $URL
 if tar -xf $HOME/st3.tar.bz2 --directory=$HOME; then
   sudo mv $HOME/sublime_text_3 $INSTALLATION_DIR
   sudo ln -s $INSTALLATION_DIR/sublime_text /bin/subl
 fi
 rm $HOME/st3.tar.bz2
- 
- 
 # Package Control - The Sublime Text Package Manager: https://sublime.wbond.net
 curl -o $HOME/Package\ Control.sublime-package https://sublime.wbond.net/Package%20Control.sublime-package
 sudo mv $HOME/Package\ Control.sublime-package "$INSTALLATION_DIR/Packages/"
- 
- 
 # Add to applications list (thanks 4ndrej)
 sudo ln -s $INSTALLATION_DIR/sublime_text.desktop /usr/share/applications/sublime_text.desktop
  
 echo ""
 echo "Sublime Text 3 installed successfully!"
 
+cat << EOF >> /etc/ssh/sshd_config
+
+# Disabling bad MACs and CYPHERS for sshd
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-ripemd160-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,hmac-ripemd160,umac-128@openssh.com
+EOF
+
 rpm --rebuilddb > /dev/null
 yum update kernel* selinux* -y
+
+curl https://satya164.github.io/fedy/fedy-installer -o fedy-installer && chmod +x fedy-installer && ./fedy-installer
