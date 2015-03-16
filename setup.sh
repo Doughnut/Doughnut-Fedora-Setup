@@ -13,6 +13,14 @@ cd /tmp/fedorasetup
 
 # Yum tweaks
 
+cat << EOF >> /etc/yum.conf
+# Disable DRPMs because they're slow
+
+deltarpm=0
+EOF
+
+yum clean all > /dev/null
+
 echo "Telling yum to keepcache!"
 sed -i 's/keepcache=.*$/keepcache=1/g' "/etc/yum.conf"
 echo "Installing  Yum Fastest-Mirror"
@@ -54,8 +62,10 @@ $IPT -A OUTPUT -o lo -j ACCEPT
 $IPT -A INPUT -p tcp ! --syn -m state --state NEW -s 0.0.0.0/0 -j DROP
 $IPT -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 $IPT -A INPUT -p tcp --dport 22 -m state --state NEW -s 0.0.0.0/0 -j ACCEPT
-unset IPT  > /dev/null
+/sbin/service iptables save
 echo "Done setting up iptables!"
+
+
 
 # Setting SELinux as permissive
 
