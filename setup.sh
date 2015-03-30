@@ -19,6 +19,10 @@ cat << EOF >> /etc/yum.conf
 deltarpm=0
 EOF
 
+#Get outta here, IPv6
+echo "net.ipv6.conf.all.disable_ipv6 = 1" >> /etc/sysctl.conf
+sysctl -p
+
 yum clean all > /dev/null
 
 echo "Telling yum to keepcache!"
