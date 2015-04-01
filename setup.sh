@@ -399,6 +399,53 @@ X-Desktop-File-Install-Version=0.22
 
 EOF
 
+cat << EOF > ~/.config/gconf/apps/guake/general/%gconf.xml
+
+<?xml version="1.0"?>
+<gconf>
+        <entry name="window_height_f" mtime="1427894872" type="float" value="100"/>
+        <entry name="window_height" mtime="1427894872" type="int" value="100"/>
+        <entry name="compat_delete" mtime="1427894868" type="string">
+                <stringvalue>delete-sequence</stringvalue>
+        </entry>
+        <entry name="compat_backspace" mtime="1427894868" type="string">
+                <stringvalue>ascii-delete</stringvalue>
+        </entry>
+        <entry name="use_default_font" mtime="1427894868" type="bool" value="true"/>
+        <entry name="scroll_keystroke" mtime="1427894868" type="bool" value="true"/>
+        <entry name="history_size" mtime="1427894883" type="int" value="8192"/>
+        <entry name="use_scrollbar" mtime="1427894877" type="bool" value="false"/>
+        <entry name="mouse_display" mtime="1427894869" type="bool" value="false"/>
+        <entry name="display_n" mtime="1427894871" type="int" value="2"/>
+        <entry name="quick_open_command_line" mtime="1427894868" type="string">
+                <stringvalue>gedit %(file_path)s</stringvalue>
+        </entry>
+        <entry name="window_tabbar" mtime="1427894868" type="bool" value="true"/>
+        <entry name="window_halignment" mtime="1427894868" type="int" value="0"/>
+        <entry name="window_width_f" mtime="1427894868" type="float" value="100"/>
+        <entry name="window_width" mtime="1427894868" type="int" value="100"/>
+        <entry name="window_losefocus" mtime="1427894868" type="bool" value="false"/>
+        <entry name="prompt_on_quit" mtime="1427894868" type="bool" value="true"/>
+        <entry name="use_popup" mtime="1427894874" type="bool" value="false"/>
+        <entry name="use_trayicon" mtime="1427894868" type="bool" value="true"/>
+</gconf>
+
+EOF
+
+cat << EOF > ~/.config/gconf/apps/guake/keybindings/local/%gconf.xml
+
+<?xml version="1.0"?>
+<gconf>
+        <entry name="next_tab" mtime="1427894888" type="string">
+                <stringvalue>&lt;Primary&gt;1</stringvalue>
+        </entry>
+        <entry name="previous_tab" mtime="1427894887" type="string">
+                <stringvalue>&lt;Primary&gt;grave</stringvalue>
+        </entry>
+</gconf>
+
+EOF
+
 rpm --rebuilddb > /dev/null
 yum update kernel* selinux* -y
 
