@@ -73,6 +73,8 @@ echo "Done setting up iptables!"
 
 # Setting SELinux as permissive
 
+echo 0 > /selinux/enforce
+
 selinuxfile=/etc/sysconfig/selinux
 echo "Disabling SELinux"
 cp $selinuxfile /etc/sysconfig/selinux_backup
@@ -83,7 +85,7 @@ cat << EOF > $selinuxfile
 # enforcing - SELinux security policy is enforced.
 # permissive - SELinux prints warnings instead of enforcing.
 # disabled - SELinux is fully disabled.
-SELINUX=permissive
+SELINUX=disabled
 # SELINUXTYPE= type of policy in use. Possible values are:
 # targeted - Only targeted network daemons are protected.
 # strict - Full SELinux protection.
@@ -108,8 +110,9 @@ rpm --import https://dl-ssl.google.com/linux/linux_signing_key.pub
 # Installing various programs and plugins
 
 echo "Installing gnome-tweak, email, chat, guake, ssh-server, media stuff, and python things!"
-yum install gnome-tweak-tool thunderbird pidgin pidgin-sipe guake python-pip vlc pithos openssh-server python-pandas python-beautifulsoup amrnb amrwb faac faad2 flac gstreamer1-libav gstreamer1-plugins-bad-freeworld gstreamer1-plugins-ugly gstreamer-ffmpeg gstreamer-plugins-bad-nonfree gstreamer-plugins-espeak gstreamer-plugins-fc gstreamer-plugins-ugly gstreamer-rtsp lame libdca libmad libmatroska x264 xvidcore gstreamer1-plugins-bad-free gstreamer1-plugins-base gstreamer1-plugins-good gstreamer-plugins-bad gstreamer-plugins-bad-free gstreamer-plugins-base gstreamer-plugins-good -y  > /dev/null
+yum install gnome-tweak-tool thunderbird pidgin pidgin-sipe guake python-pip vlc pithos openssh-server python-pandas python-beautifulsoup amrnb amrwb faac faad2 flac gstreamer1-libav gstreamer1-plugins-bad-freeworld gstreamer1-plugins-ugly gstreamer-ffmpeg gstreamer-plugins-bad-nonfree gstreamer-plugins-espeak gstreamer-plugins-fc gstreamer-plugins-ugly gstreamer-rtsp lame libdca libmad libmatroska x264 xvidcore gstreamer1-plugins-bad-free gstreamer1-plugins-base gstreamer1-plugins-good gstreamer-plugins-bad gstreamer-plugins-bad-free gstreamer-plugins-base gstreamer-plugins-good haveged -y  > /dev/null
 pip install livestreamer > /dev/null
+service haveged start
 
 # Installing Dropbox
 
@@ -143,25 +146,10 @@ EOF
 # Run this script with:
 #
 #     curl -L git.io/sublimetext | sh
-# Detect the architecture
-UNAME=$(uname -m)
-if [ "$UNAME" = 'x86_64' ]; then
-  ARCHITECTURE="x64"
-else
-  ARCHITECTURE="x32"
-fi
-# Download the tarball, unpack and install
-URL="http://c758482.r82.cf2.rackcdn.com/sublime_text_3_build_3065_$ARCHITECTURE.tar.bz2"
-INSTALLATION_DIR="/opt/sublime_text"
-curl -o $HOME/st3.tar.bz2 $URL
-if tar -xf $HOME/st3.tar.bz2 --directory=$HOME; then
-  sudo mv $HOME/sublime_text_3 $INSTALLATION_DIR
-  sudo ln -s $INSTALLATION_DIR/sublime_text /bin/subl
-fi
-rm $HOME/st3.tar.bz2
-# Package Control - The Sublime Text Package Manager: https://sublime.wbond.net
-curl -o $HOME/Package\ Control.sublime-package https://sublime.wbond.net/Package%20Control.sublime-package
-sudo mv $HOME/Package\ Control.sublime-package "$INSTALLATION_DIR/Packages/"
+
+
+curl -L git.io/sublimetext | sh
+
 # Add to applications list (thanks 4ndrej)
 sudo ln -s $INSTALLATION_DIR/sublime_text.desktop /usr/share/applications/sublime_text.desktop
  
@@ -178,6 +166,7 @@ AllowUsers jeffreyf
 EOF
 
 chkconfig sshd on
+chkconfig haveged on
 
 rpm --rebuilddb > /dev/null
 yum update kernel* selinux* -y
