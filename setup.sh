@@ -110,7 +110,7 @@ rpm --import https://dl-ssl.google.com/linux/linux_signing_key.pub
 # Installing various programs and plugins
 
 echo "Installing gnome-tweak, email, chat, guake, ssh-server, media stuff, and python things!"
-yum install gnome-tweak-tool thunderbird pidgin pidgin-sipe guake python-pip vlc pithos openssh-server python-pandas python-beautifulsoup amrnb amrwb faac faad2 flac gstreamer1-libav gstreamer1-plugins-bad-freeworld gstreamer1-plugins-ugly gstreamer-ffmpeg gstreamer-plugins-bad-nonfree gstreamer-plugins-espeak gstreamer-plugins-fc gstreamer-plugins-ugly gstreamer-rtsp lame libdca libmad libmatroska x264 xvidcore gstreamer1-plugins-bad-free gstreamer1-plugins-base gstreamer1-plugins-good gstreamer-plugins-bad gstreamer-plugins-bad-free gstreamer-plugins-base gstreamer-plugins-good haveged -y  > /dev/null
+yum install gnome-tweak-tool thunderbird pidgin pidgin-sipe guake python-pip vlc pithos openssh-server zsh python-pandas python-beautifulsoup amrnb amrwb faac faad2 flac gstreamer1-libav gstreamer1-plugins-bad-freeworld gstreamer1-plugins-ugly gstreamer-ffmpeg gstreamer-plugins-bad-nonfree gstreamer-plugins-espeak gstreamer-plugins-fc gstreamer-plugins-ugly gstreamer-rtsp lame libdca libmad libmatroska x264 xvidcore gstreamer1-plugins-bad-free gstreamer1-plugins-base gstreamer1-plugins-good gstreamer-plugins-bad gstreamer-plugins-bad-free gstreamer-plugins-base gstreamer-plugins-good haveged -y  > /dev/null
 pip install livestreamer > /dev/null
 service haveged start
 
@@ -165,8 +165,43 @@ MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-ripemd160-
 AllowUsers jeffreyf
 EOF
 
+#Oh-My-ZSH Install (because it's amazing)
+git clone git://github.com/robbyrussell/oh-my-zsh.git /home/$USERNAME/.oh-my-zsh
+cp /home/$USERNAME/.zshrc /home/$USERNAME/.zshrc.orig
+cp /home/$USERNAME/.oh-my-zsh/templates/zshrc.zsh-template /home/$USERNAME/.zshrc
+chsh -s /bin/zsh $USERNAME
+sed -i 's/ZSH_THEME=.*$/ZSH_THEME="dallas"/g' /home/$USERNAME/.zshrc
+
+# Start things on boot, please
 chkconfig sshd on
 chkconfig haveged on
+
+#Start Guake on login
+mkdir /home/$USERNAME/.config/autostart
+cat << EOF >> /home/$USERNAME/.config/autostart/guake.desktop
+[Desktop Entry]
+Encoding=UTF-8
+Name=Guake Terminal
+Name[pt]=Guake Terminal
+Name[pt_BR]=Guake Terminal
+Name[fr]=Guake Terminal
+Name[fr_FR]=Guake Terminal
+Comment=Use the command line in a Quake-like terminal
+Comment[pt]=Utilizar a linha de comando em um terminal estilo Quake
+Comment[pt_BR]=Utilizar a linha de comando em um terminal estilo Quake
+Comment[fr]=Utilisez la ligne de commande comme dans un terminal quake
+Comment[fr_FR]=Utilisez la ligne de commande comme dans un terminal quake
+TryExec=guake
+Exec=guake 
+Icon=guake
+Type=Application
+Categories=GNOME;GTK;System;Utility;TerminalEmulator;
+StartupNotify=true
+Keywords=Terminal;Utility;
+X-Desktop-File-Install-Version=0.22
+
+EOF
+
 
 rpm --rebuilddb > /dev/null
 yum update kernel* selinux* -y
