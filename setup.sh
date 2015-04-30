@@ -117,12 +117,12 @@ service haveged start
 # Installing Dropbox
 
 echo "Installing Dropbox"
-yum install libgnome -y  > /dev/null
-dropboxurl=$(curl https://www.dropbox.com/install?os=lnx | tr ' ' '\n' | grep -o "nautilus-dropbox-[0-9].[0-9].[0-9]-[0-9].fedora.x86_64.rpm" | head -n 1 | sed -e 's/^/http:\/\/linux.dropbox.com\/packages\/fedora\//') 
-wget $dropboxurl  > /dev/null
-rpm -U *.fedora.x86_64.rpm
-rm -rf *.fedora.x86_64.rpm  > /dev/null
-yum-config-manager --save --setopt=Dropbox.skip_if_unavailable=true
+yum install libgnome dropbox -y  > /dev/null
+#dropboxurl=$(curl https://www.dropbox.com/install?os=lnx | tr ' ' '\n' | grep -o "nautilus-dropbox-[0-9].[0-9].[0-9]-[0-9].fedora.x86_64.rpm" | head -n 1 | sed -e 's/^/http:\/\/linux.dropbox.com\/packages\/fedora\//') 
+#wget $dropboxurl  > /dev/null
+#rpm -U *.fedora.x86_64.rpm
+#rm -rf *.fedora.x86_64.rpm  > /dev/null
+#yum-config-manager --save --setopt=Dropbox.skip_if_unavailable=true
 
 # Terminal Colors! (From https://github.com/satya164/fedy/blob/master/plugins/util/color_prompt.sh)
 
