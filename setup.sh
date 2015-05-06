@@ -169,8 +169,9 @@ EOF
 git clone git://github.com/robbyrussell/oh-my-zsh.git /home/$USERNAME/.oh-my-zsh
 cp /home/$USERNAME/.zshrc /home/$USERNAME/.zshrc.orig
 cp /home/$USERNAME/.oh-my-zsh/templates/zshrc.zsh-template /home/$USERNAME/.zshrc
-chsh -s /bin/zsh $USERNAME
 sed -i 's/ZSH_THEME=.*$/ZSH_THEME="dallas"/g' /home/$USERNAME/.zshrc
+chsh -s /bin/zsh $USERNAME
+
 
 # Start things on boot, please
 chkconfig sshd on
