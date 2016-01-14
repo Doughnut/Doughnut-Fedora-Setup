@@ -11,30 +11,20 @@ CURRENTDIR=$(pwd)
 mkdir /tmp/fedorasetup/
 cd /tmp/fedorasetup
 
-# Yum tweaks
-
-cat << EOF >> /etc/yum.conf
-# Disable DRPMs because they're slow
-
-deltarpm=0
-EOF
-
 #Get outta here, IPv6
 echo "net.ipv6.conf.all.disable_ipv6 = 1" >> /etc/sysctl.conf
 sysctl -p
 
-yum clean all > /dev/null
+dnf clean all > /dev/null
 
-echo "Telling yum to keepcache!"
-sed -i 's/keepcache=.*$/keepcache=1/g' "/etc/yum.conf"
-echo "Installing  Yum Fastest-Mirror"
-yum install yum-plugin-fastestmirror* -y  > /dev/null
+echo "Turning on Fastest-Mirror"
+echo "fastestmirror=true" >> /etc/dnf/dnf.conf
 
 # Install things!
 
 echo "Installing RPMFusion repos and some basic software!"
-yum localinstall --nogpgcheck http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm -y > /dev/null
-yum install cabextract lzip nano p7zip p7zip-plugins unrar wget git vim sendmail xclip -y  > /dev/null
+dnf install http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm -y 
+dnf install cabextract lzip nano p7zip p7zip-plugins unrar wget git vim sendmail xclip -y  > /dev/null
 rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-*
 echo "Done with initial install!"
 
@@ -43,7 +33,7 @@ echo "Done with initial install!"
 echo "Disabling firewalld and turning on iptables!"
 systemctl disable firewalld  > /dev/null
 systemctl stop firewalld > /dev/null
-yum install iptables-services -y  > /dev/null
+dnf install iptables-services -y  > /dev/null
 touch /etc/sysconfig/iptables  > /dev/null
 touch /etc/sysconfig/ip6tables  > /dev/null
 systemctl start iptables  > /dev/null
@@ -110,8 +100,9 @@ rpm --import https://dl-ssl.google.com/linux/linux_signing_key.pub
 # Installing various programs and plugins
 
 echo "Installing gnome-tweak, email, chat, guake, ssh-server, media stuff, and python things!"
-yum install gnome-tweak-tool thunderbird pidgin pidgin-sipe guake python-pip vlc pithos openssh-server zsh python-pandas python-beautifulsoup amrnb amrwb faac faad2 flac gstreamer1-libav gstreamer1-plugins-bad-freeworld gstreamer1-plugins-ugly gstreamer-ffmpeg gstreamer-plugins-bad-nonfree gstreamer-plugins-espeak gstreamer-plugins-fc gstreamer-plugins-ugly gstreamer-rtsp lame libdca libmad libmatroska x264 xvidcore gstreamer1-plugins-bad-free gstreamer1-plugins-base gstreamer1-plugins-good gstreamer-plugins-bad gstreamer-plugins-bad-free gstreamer-plugins-base gstreamer-plugins-good haveged -y  > /dev/null
-pip install livestreamer > /dev/null
+dnf install gnome-tweak-tool thunderbird pidgin pidgin-sipe guake python-pip vlc pithos openssh-server zsh python-pandas python-beautifulsoup haveged -y  > /dev/null
+pip install livestreamer
+pip install thefuck
 service haveged start
 
 # Installing Dropbox
@@ -151,7 +142,7 @@ EOF
 curl -L git.io/sublimetext | sh
 
 # Add to applications list (thanks 4ndrej)
-sudo ln -s $INSTALLATION_DIR/sublime_text.desktop /usr/share/applications/sublime_text.desktop
+#sudo ln -s $INSTALLATION_DIR/sublime_text.desktop /usr/share/applications/sublime_text.desktop
  
 echo ""
 echo "Sublime Text 3 installed successfully!"
@@ -162,49 +153,23 @@ cat << EOF >> /etc/ssh/sshd_config
 Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
 MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-ripemd160-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,hmac-ripemd160,umac-128@openssh.com
 
-AllowUsers jeffreyf
+AllowUsers $USERNAME
 EOF
 
 #Oh-My-ZSH Install (because it's amazing)
-git clone git://github.com/robbyrussell/oh-my-zsh.git /home/$USERNAME/.oh-my-zsh
-cp /home/$USERNAME/.zshrc /home/$USERNAME/.zshrc.orig
-cp /home/$USERNAME/.oh-my-zsh/templates/zshrc.zsh-template /home/$USERNAME/.zshrc
-sed -i 's/ZSH_THEME=.*$/ZSH_THEME="dallas"/g' /home/$USERNAME/.zshrc
-chsh -s /bin/zsh $USERNAME
+#git clone git://github.com/robbyrussell/oh-my-zsh.git /home/$USERNAME/.oh-my-zsh
+#cp /home/$USERNAME/.zshrc /home/$USERNAME/.zshrc.orig
+#cp /home/$USERNAME/.oh-my-zsh/templates/zshrc.zsh-template /home/$USERNAME/.zshrc
+#sed -i 's/ZSH_THEME=.*$/ZSH_THEME="dallas"/g' /home/$USERNAME/.zshrc
+#chsh -s /bin/zsh $USERNAME
 
 
 # Start things on boot, please
 chkconfig sshd on
 chkconfig haveged on
 
-#Start Guake on login
-mkdir /home/$USERNAME/.config/autostart
-cat << EOF >> /home/$USERNAME/.config/autostart/guake.desktop
-[Desktop Entry]
-Encoding=UTF-8
-Name=Guake Terminal
-Name[pt]=Guake Terminal
-Name[pt_BR]=Guake Terminal
-Name[fr]=Guake Terminal
-Name[fr_FR]=Guake Terminal
-Comment=Use the command line in a Quake-like terminal
-Comment[pt]=Utilizar a linha de comando em um terminal estilo Quake
-Comment[pt_BR]=Utilizar a linha de comando em um terminal estilo Quake
-Comment[fr]=Utilisez la ligne de commande comme dans un terminal quake
-Comment[fr_FR]=Utilisez la ligne de commande comme dans un terminal quake
-TryExec=guake
-Exec=guake 
-Icon=guake
-Type=Application
-Categories=GNOME;GTK;System;Utility;TerminalEmulator;
-StartupNotify=true
-Keywords=Terminal;Utility;
-X-Desktop-File-Install-Version=0.22
-
-EOF
-
 
 rpm --rebuilddb > /dev/null
-yum update kernel* selinux* -y
+dnf update kernel* selinux* dkms -y
 
 curl https://satya164.github.io/fedy/fedy-installer -o fedy-installer && chmod +x fedy-installer && ./fedy-installer
