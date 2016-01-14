@@ -172,4 +172,4 @@ chkconfig haveged on
 rpm --rebuilddb > /dev/null
 dnf update kernel* selinux* dkms -y
 
-curl https://satya164.github.io/fedy/fedy-installer -o fedy-installer && chmod +x fedy-installer && ./fedy-installer
+curl http://folkswithhats.org/fedy-installer -o fedy-installer && chmod +x fedy-installer && ./fedy-installer
