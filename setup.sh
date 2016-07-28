@@ -24,7 +24,7 @@ echo "fastestmirror=true" >> /etc/dnf/dnf.conf
 
 echo "Installing RPMFusion repos and some basic software!"
 dnf install http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm -y 
-dnf install cabextract lzip nano p7zip p7zip-plugins unrar wget git vim sendmail xclip -y  > /dev/null
+dnf install cabextract lzip nano p7zip p7zip-plugins unrar wget git vim sendmail xclip @development-tools -y  > /dev/null
 rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-*
 echo "Done with initial install!"
 
