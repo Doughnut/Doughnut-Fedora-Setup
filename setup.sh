@@ -11,6 +11,9 @@ CURRENTDIR=$(pwd)
 mkdir /tmp/fedorasetup/
 cd /tmp/fedorasetup
 
+# Setting SELinux as permissive
+echo 0 > /sys/fs/selinux/enforce
+
 #Get outta here, IPv6
 echo "net.ipv6.conf.all.disable_ipv6 = 1" >> /etc/sysctl.conf
 sysctl -p
@@ -19,27 +22,27 @@ dnf clean all > /dev/null
 
 echo "Turning on Fastest-Mirror"
 echo "fastestmirror=true" >> /etc/dnf/dnf.conf
+echo "deltarpm=false" >> /etc/dnf/dnf.conf
 
 # Install things!
 
 echo "Installing RPMFusion repos and some basic software!"
 dnf install http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm -y 
-dnf install cabextract lzip nano p7zip p7zip-plugins unrar wget git vim sendmail xclip @development-tools -y  > /dev/null
-rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-*
+dnf install cabextract lzip nano p7zip p7zip-plugins unrar wget git vim sendmail xclip @development-tools -y
 echo "Done with initial install!"
 
 # Disable firewalld and enable iptables
 
 echo "Disabling firewalld and turning on iptables!"
-systemctl disable firewalld  > /dev/null
-systemctl stop firewalld > /dev/null
-dnf install iptables-services -y  > /dev/null
-touch /etc/sysconfig/iptables  > /dev/null
-touch /etc/sysconfig/ip6tables  > /dev/null
-systemctl start iptables  > /dev/null
-systemctl start ip6tables > /dev/null
-systemctl enable iptables > /dev/null
-systemctl enable ip6tables > /dev/null
+systemctl stop firewalld
+systemctl disable firewalld
+dnf install iptables-services -y
+touch /etc/sysconfig/iptables
+touch /etc/sysconfig/ip6tables
+systemctl start iptables  
+systemctl start ip6tables 
+systemctl enable iptables 
+systemctl enable ip6tables 
 /sbin/service iptables save 
 
 # Setup iptables to only allow SSH and the needs-to-start-with-syn rule
@@ -58,12 +61,6 @@ $IPT -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 $IPT -A INPUT -p tcp --dport 22 -m state --state NEW -s 0.0.0.0/0 -j ACCEPT
 /sbin/service iptables save
 echo "Done setting up iptables!"
-
-
-
-# Setting SELinux as permissive
-
-echo 0 > /selinux/enforce
 
 selinuxfile=/etc/sysconfig/selinux
 echo "Disabling SELinux"
@@ -93,22 +90,23 @@ enabled=1
 gpgcheck=1
 gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub
 EOF
-yum install google-chrome-stable -y  > /dev/null
-rpm --import https://dl-ssl.google.com/linux/linux_signing_key.pub
+dnf install google-chrome-stable -y
+#rpm --import https://dl-ssl.google.com/linux/linux_signing_key.pub
 
 
 # Installing various programs and plugins
 
 echo "Installing gnome-tweak, email, chat, guake, ssh-server, media stuff, and python things!"
-dnf install gnome-tweak-tool thunderbird pidgin pidgin-sipe guake python-pip vlc pithos openssh-server zsh python-pandas python-beautifulsoup haveged -y  > /dev/null
+dnf install gnome-tweak-tool thunderbird pidgin pidgin-sipe guake python-pip vlc pithos openssh-server zsh python-pandas python-beautifulsoup haveged -y
+pip install pip --upgrade
 pip install livestreamer
-pip install thefuck
+#pip install thefuck
 service haveged start
 
 # Installing Dropbox
 
-echo "Installing Dropbox"
-yum install libgnome dropbox -y  > /dev/null
+#echo "Installing Dropbox"
+#yum install libgnome dropbox -y  > /dev/null
 #dropboxurl=$(curl https://www.dropbox.com/install?os=lnx | tr ' ' '\n' | grep -o "nautilus-dropbox-[0-9].[0-9].[0-9]-[0-9].fedora.x86_64.rpm" | head -n 1 | sed -e 's/^/http:\/\/linux.dropbox.com\/packages\/fedora\//') 
 #wget $dropboxurl  > /dev/null
 #rpm -U *.fedora.x86_64.rpm
@@ -171,6 +169,7 @@ chkconfig haveged on
 
 
 rpm --rebuilddb > /dev/null
-dnf update kernel* selinux* dkms -y
+dnf install dkms -y
+dnf update -y
 
-curl http://folkswithhats.org/fedy-installer -o fedy-installer && chmod +x fedy-installer && ./fedy-installer
+#curl http://folkswithhats.org/fedy-installer -o fedy-installer && chmod +x fedy-installer && ./fedy-installer
