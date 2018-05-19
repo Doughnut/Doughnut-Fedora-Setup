@@ -136,8 +136,11 @@ EOF
 #
 #     curl -L git.io/sublimetext | sh
 
+rpm -v --import https://download.sublimetext.com/sublimehq-rpm-pub.gpg
+dnf config-manager --add-repo https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo
+dnf install sublime-text
 
-curl -L git.io/sublimetext | sh
+#curl -L git.io/sublimetext | sh
 
 # Add to applications list (thanks 4ndrej)
 #sudo ln -s $INSTALLATION_DIR/sublime_text.desktop /usr/share/applications/sublime_text.desktop
