@@ -11,13 +11,6 @@ CURRENTDIR=$(pwd)
 mkdir /tmp/fedorasetup/
 cd /tmp/fedorasetup
 
-# Setting SELinux as permissive
-echo 0 > /sys/fs/selinux/enforce
-
-#Get outta here, IPv6
-echo "net.ipv6.conf.all.disable_ipv6 = 1" >> /etc/sysctl.conf
-sysctl -p
-
 dnf clean all > /dev/null
 
 echo "Turning on Fastest-Mirror"
@@ -28,8 +21,12 @@ echo "deltarpm=false" >> /etc/dnf/dnf.conf
 
 echo "Installing RPMFusion repos and some basic software!"
 dnf install http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm -y 
-dnf install cabextract lzip nano p7zip p7zip-plugins unrar wget git vim sendmail xclip @development-tools -y
+dnf install lzip p7zip p7zip-plugins unrar wget git vim -y
 echo "Done with initial install!"
+
+# Syctl Changes
+curl https://raw.githubusercontent.com/k4yt3x/sysctl/master/sysctl.conf >> /etc/sysctl.conf
+sysctl -p
 
 # Disable firewalld and enable iptables
 
@@ -62,23 +59,6 @@ $IPT -A INPUT -p tcp --dport 22 -m state --state NEW -s 0.0.0.0/0 -j ACCEPT
 /sbin/service iptables save
 echo "Done setting up iptables!"
 
-selinuxfile=/etc/sysconfig/selinux
-echo "Disabling SELinux"
-cp $selinuxfile /etc/sysconfig/selinux_backup
-
-cat << EOF > $selinuxfile
-# This file controls the state of SELinux on the system.
-# SELINUX= can take one of these three values:
-# enforcing - SELinux security policy is enforced.
-# permissive - SELinux prints warnings instead of enforcing.
-# disabled - SELinux is fully disabled.
-SELINUX=disabled
-# SELINUXTYPE= type of policy in use. Possible values are:
-# targeted - Only targeted network daemons are protected.
-# strict - Full SELinux protection.
-SELINUXTYPE=targeted
-EOF
-
 # Adding chrome repo and installing chrome stable
 
 echo "Installing Chrome!"
@@ -97,21 +77,7 @@ dnf install google-chrome-stable -y
 # Installing various programs and plugins
 
 echo "Installing gnome-tweak, email, chat, guake, ssh-server, media stuff, and python things!"
-dnf install gnome-tweak-tool thunderbird pidgin pidgin-sipe guake python-pip vlc pithos openssh-server zsh python-pandas python-beautifulsoup haveged -y
-pip install pip --upgrade
-pip install livestreamer
-#pip install thefuck
-service haveged start
-
-# Installing Dropbox
-
-#echo "Installing Dropbox"
-#yum install libgnome dropbox -y  > /dev/null
-#dropboxurl=$(curl https://www.dropbox.com/install?os=lnx | tr ' ' '\n' | grep -o "nautilus-dropbox-[0-9].[0-9].[0-9]-[0-9].fedora.x86_64.rpm" | head -n 1 | sed -e 's/^/http:\/\/linux.dropbox.com\/packages\/fedora\//') 
-#wget $dropboxurl  > /dev/null
-#rpm -U *.fedora.x86_64.rpm
-#rm -rf *.fedora.x86_64.rpm  > /dev/null
-#yum-config-manager --save --setopt=Dropbox.skip_if_unavailable=true
+dnf install gnome-tweak-tool python-pip vlc zsh haveged -y
 
 # Terminal Colors! (From https://github.com/satya164/fedy/blob/master/plugins/util/color_prompt.sh)
 
@@ -167,12 +133,9 @@ EOF
 
 
 # Start things on boot, please
-chkconfig sshd on
-chkconfig haveged on
+systemctl enable haveged
 
 
-rpm --rebuilddb > /dev/null
-dnf install dkms -y
 dnf update -y
 
 #curl http://folkswithhats.org/fedy-installer -o fedy-installer && chmod +x fedy-installer && ./fedy-installer
