@@ -77,7 +77,7 @@ dnf install google-chrome-stable -y
 # Installing various programs and plugins
 
 echo "Installing gnome-tweak, email, chat, guake, ssh-server, media stuff, and python things!"
-dnf install gnome-tweak-tool python-pip vlc zsh haveged -y
+dnf install gnome-tweak-tool python3-pip vlc zsh haveged -y
 
 # Terminal Colors! (From https://github.com/satya164/fedy/blob/master/plugins/util/color_prompt.sh)
 
