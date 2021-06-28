@@ -81,8 +81,6 @@ dnf install gnome-tweak-tool python3-pip vlc zsh haveged steam snapd gstreamer1-
 
 systemctl enable snapd --now
 
-snap install discord
-
 # Terminal Colors! (From https://github.com/satya164/fedy/blob/master/plugins/util/color_prompt.sh)
 
 cat <<EOF | tee /etc/profile.d/color_prompt.sh > /dev/null 2>&1
@@ -141,5 +139,8 @@ systemctl enable haveged
 
 
 dnf update -y
+
+snap install discord
+snap connect discord:system-observe
 
 #curl http://folkswithhats.org/fedy-installer -o fedy-installer && chmod +x fedy-installer && ./fedy-installer
