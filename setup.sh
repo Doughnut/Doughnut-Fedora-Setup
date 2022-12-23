@@ -16,6 +16,10 @@ dnf clean all > /dev/null
 echo "Turning on Fastest-Mirror"
 echo "fastestmirror=true" >> /etc/dnf/dnf.conf
 echo "deltarpm=false" >> /etc/dnf/dnf.conf
+echo "max_parallell_downloads=10" >> /etc/dnf/dnf.conf
+
+dnf config-manager --set-enabled updates-testing;
+dnf config-manager --set-enabled updates-testing-modular;
 
 # Install things!
 
@@ -77,9 +81,8 @@ dnf install google-chrome-stable -y
 # Installing various programs and plugins
 
 echo "Installing gnome-tweak, email, chat, guake, ssh-server, media stuff, and python things!"
-dnf install gnome-tweak-tool python3-pip vlc zsh haveged steam snapd gstreamer1-plugin-openh264 mozilla-openh264 ffmpeg -y
+dnf install gnome-tweak-tool python3-pip vlc zsh haveged steam gstreamer1-plugin-openh264 mozilla-openh264 ffmpeg -y
 
-systemctl enable snapd --now
 
 # Terminal Colors! (From https://github.com/satya164/fedy/blob/master/plugins/util/color_prompt.sh)
 
@@ -106,7 +109,7 @@ EOF
 
 rpm -v --import https://download.sublimetext.com/sublimehq-rpm-pub.gpg
 dnf config-manager --add-repo https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo
-dnf install sublime-text
+dnf install sublime-text -y
 
 #curl -L git.io/sublimetext | sh
 
@@ -135,12 +138,30 @@ EOF
 
 
 # Start things on boot, please
-systemctl enable haveged
+systemctl enable haveged --now
 
+flatpak install flathub com.discordapp.Discord -y
+flatpak install flathub com.spotify.Client -y
+flatpak install flathub com.visualstudio.code -y
+flatpak install flathub com.google.Chrome -y
 
-dnf update -y
-
-snap install discord
-snap connect discord:system-observe
+# bash -- << EOF
+# mkdir -p ~/.icons ~/.local/share/applications
+# curl -L -o ~/.local/RuneLite.AppImage https://github.com/runelite/launcher/releases/download/2.4.2/RuneLite.AppImage
+# # OR use this for aarch64 systems
+# #curl -L -o ~/.local/RuneLite.AppImage https://github.com/runelite/launcher/releases/download/2.4.2/RuneLite-aarch64.AppImage
+# chmod +x ~/.local/RuneLite.AppImage
+# curl -L -o ~/.icons/RuneLite.png https://raw.githubusercontent.com/runelite/launcher/master/appimage/runelite.png
+# echo "\
+# [Desktop Entry]
+# Name=RuneLite
+# Comment=An opensource third party client for Old School RuneScape
+# Exec=$HOME/.local/RuneLite.AppImage
+# Terminal=false
+# Type=Application
+# Icon=RuneLite.png
+# Categories=Game;
+# " > ~/.local/share/applications/RuneLite.desktop
+# EOF
 
 #curl http://folkswithhats.org/fedy-installer -o fedy-installer && chmod +x fedy-installer && ./fedy-installer
