@@ -16,7 +16,7 @@ dnf clean all > /dev/null
 echo "Turning on Fastest-Mirror"
 echo "fastestmirror=true" >> /etc/dnf/dnf.conf
 echo "deltarpm=false" >> /etc/dnf/dnf.conf
-echo "max_parallell_downloads=10" >> /etc/dnf/dnf.conf
+echo "max_parallel_downloads=10" >> /etc/dnf/dnf.conf
 
 dnf config-manager --set-enabled updates-testing;
 dnf config-manager --set-enabled updates-testing-modular;
