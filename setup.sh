@@ -18,8 +18,8 @@ echo "fastestmirror=true" >> /etc/dnf/dnf.conf
 echo "deltarpm=false" >> /etc/dnf/dnf.conf
 echo "max_parallel_downloads=10" >> /etc/dnf/dnf.conf
 
-dnf config-manager --set-enabled updates-testing;
-dnf config-manager --set-enabled updates-testing-modular;
+#dnf config-manager --set-enabled updates-testing;
+#dnf config-manager --set-enabled updates-testing-modular;
 
 # Install things!
 
@@ -65,23 +65,26 @@ echo "Done setting up iptables!"
 
 # Adding chrome repo and installing chrome stable
 
-echo "Installing Chrome!"
-cat << EOF > /etc/yum.repos.d/google-chrome.repo
-[google-chrome]
-name=google-chrome - \$basearch
-baseurl=http://dl.google.com/linux/chrome/rpm/stable/\$basearch
-enabled=1
-gpgcheck=1
-gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub
-EOF
-dnf install google-chrome-stable -y
+#echo "Installing Chrome!"
+#cat << EOF > /etc/yum.repos.d/google-chrome.repo
+#[google-chrome]
+#name=google-chrome - \$basearch
+#baseurl=http://dl.google.com/linux/chrome/rpm/stable/\$basearch
+#enabled=1
+#gpgcheck=1
+#gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub
+#EOF
+#dnf install google-chrome-stable -y
 #rpm --import https://dl-ssl.google.com/linux/linux_signing_key.pub
 
 
 # Installing various programs and plugins
 
 echo "Installing gnome-tweak, email, chat, guake, ssh-server, media stuff, and python things!"
-dnf install gnome-tweak-tool python3-pip vlc zsh haveged steam gstreamer1-plugin-openh264 mozilla-openh264 ffmpeg -y
+dnf install gnome-tweak-tool zsh haveged -y
+dnf swap ffmpeg-free ffmpeg --allowerasing -y
+dnf groupupdate multimedia --setop="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin -y
+dnf groupupdate sound-and-video -y
 
 
 # Terminal Colors! (From https://github.com/satya164/fedy/blob/master/plugins/util/color_prompt.sh)
@@ -126,7 +129,7 @@ KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256
 Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
 MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com
 
-AllowUsers $USERNAME
+AllowUsers doughnut
 EOF
 
 #Oh-My-ZSH Install (because it's amazing)
@@ -139,6 +142,8 @@ EOF
 
 # Start things on boot, please
 systemctl enable haveged --now
+
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
 flatpak install flathub com.discordapp.Discord -y
 flatpak install flathub com.spotify.Client -y
