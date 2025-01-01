@@ -83,8 +83,8 @@ echo "Done setting up iptables!"
 echo "Installing gnome-tweak, email, chat, guake, ssh-server, media stuff, and python things!"
 dnf install gnome-tweak-tool zsh haveged -y
 dnf swap ffmpeg-free ffmpeg --allowerasing -y
-dnf groupupdate multimedia --setop="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin -y
-dnf groupupdate sound-and-video -y
+dnf group install multimedia -y
+dnf group install sound-and-video -y
 
 
 # Terminal Colors! (From https://github.com/satya164/fedy/blob/master/plugins/util/color_prompt.sh)
@@ -111,7 +111,7 @@ EOF
 #     curl -L git.io/sublimetext | sh
 
 rpm -v --import https://download.sublimetext.com/sublimehq-rpm-pub.gpg
-dnf config-manager --add-repo https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo
+dnf config-manager addrepo --from-repofile=https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo
 dnf install sublime-text -y
 
 #curl -L git.io/sublimetext | sh
