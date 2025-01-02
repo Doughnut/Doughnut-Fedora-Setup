@@ -81,7 +81,7 @@ echo "Done setting up iptables!"
 # Installing various programs and plugins
 
 echo "Installing gnome-tweak, email, chat, guake, ssh-server, media stuff, and python things!"
-dnf install gnome-tweak-tool zsh haveged -y
+dnf install gnome-tweak-tool zsh -y
 dnf swap ffmpeg-free ffmpeg --allowerasing -y
 dnf group install multimedia -y
 dnf group install sound-and-video -y
@@ -141,7 +141,8 @@ EOF
 
 
 # Start things on boot, please
-systemctl enable haveged --now
+#systemctl enable haveged --now
+## haveged no longer needed since kernel 5.4 and the jitter change
 
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
